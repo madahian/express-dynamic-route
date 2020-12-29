@@ -107,6 +107,13 @@ const model = {
     data.functionName = 'findWithJoin';
     let spcFnc = await model.callHelperIfExist(data, req);
     if (spcFnc === false) {
+      let selection = '*';
+      if (
+        data.selection &&
+        Array.isArray(data.selection) &&
+        data.selection.every((el) => typeof el === 'string')
+      )
+        selection = data.selection;
       let resObj = {};
       const getModel = () =>
         knex
@@ -142,9 +149,9 @@ const model = {
           .clone()
           .offset(offset)
           .limit(data.perPage)
-          .select(data.selection);
+          .select(selection);
       } else if (data.paginate === false) {
-        resObj.data = await getModel().clone().select(data.selection);
+        resObj.data = await getModel().clone().select(selection);
       }
       return resObj;
     } else {

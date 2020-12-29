@@ -19,6 +19,13 @@ const model = {
   },
   async find(req, data) {
     data.functionName = 'find';
+    let selection = '*';
+    if (
+      data.selection &&
+      Array.isArray(data.selection) &&
+      data.selection.every((el) => typeof el === 'string')
+    )
+      selection = data.selection;
     let spcFnc = await model.callHelperIfExist(data, req);
     if (spcFnc === false) {
       let resObj = {};
@@ -55,9 +62,9 @@ const model = {
           .clone()
           .offset(offset)
           .limit(data.perPage)
-          .select('*');
+          .select(selection);
       } else if (data.paginate === false) {
-        resObj.data = await getModel().clone().select('*');
+        resObj.data = await getModel().clone().select(selection);
       }
       return resObj;
     } else {
@@ -98,7 +105,7 @@ const model = {
   },
   async findWithJoin(req, data) {
     data.functionName = 'findWithJoin';
-    let spcFnc = await model.callHelperIfExist(data);
+    let spcFnc = await model.callHelperIfExist(data, req);
     if (spcFnc === false) {
       let resObj = {};
       const getModel = () =>

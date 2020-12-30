@@ -62,9 +62,13 @@ const model = {
           .clone()
           .offset(offset)
           .limit(data.perPage)
+          .orderBy(data.sortBy, data.direction)
           .select(selection);
       } else if (data.paginate === false) {
-        resObj.data = await getModel().clone().select(selection);
+        resObj.data = await getModel()
+          .clone()
+          .orderBy(data.sortBy, data.direction)
+          .select(selection);
       }
       return resObj;
     } else {
@@ -149,9 +153,13 @@ const model = {
           .clone()
           .offset(offset)
           .limit(data.perPage)
+          .orderBy(data.sortBy, data.direction)
           .select(selection);
       } else if (data.paginate === false) {
-        resObj.data = await getModel().clone().select(selection);
+        resObj.data = await getModel()
+          .clone()
+          .orderBy(data.sortBy, data.direction)
+          .select(selection);
       }
       return resObj;
     } else {

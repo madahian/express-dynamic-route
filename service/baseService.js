@@ -65,10 +65,7 @@ const model = {
           .orderBy(data.sortBy, data.direction)
           .select(selection);
       } else if (data.paginate === false) {
-        resObj.data = await getModel()
-          .clone()
-          .orderBy(data.sortBy, data.direction)
-          .select(selection);
+        resObj.data = await getModel().clone().select(selection);
       }
       return resObj;
     } else {
@@ -156,10 +153,7 @@ const model = {
           .orderBy(data.sortBy, data.direction)
           .select(selection);
       } else if (data.paginate === false) {
-        resObj.data = await getModel()
-          .clone()
-          .orderBy(data.sortBy, data.direction)
-          .select(selection);
+        resObj.data = await getModel().clone().select(selection);
       }
       return resObj;
     } else {

@@ -34,7 +34,7 @@ const model = {
           .table(data.tableName)
           .andWhere(function () {
             if (req.query.filter && data.filter) {
-              for (const item of data.filter.items) {
+              for (const item of data.filter) {
                 this.orWhere(`${item}`, 'like', `%${req.query.filter}%`);
               }
             }
@@ -122,7 +122,7 @@ const model = {
           .join(data.secTableName, data.firstProp, '=', data.secProp)
           .andWhere(function () {
             if (req.query.filter && data.filter) {
-              for (const item of data.filter.items) {
+              for (const item of data.filter) {
                 this.orWhere(`${item}`, 'like', `%${req.query.filter}%`);
               }
             }

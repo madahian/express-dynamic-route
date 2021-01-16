@@ -16,7 +16,6 @@ app.use(
   })
 );
 app.use(cookieParser());
-app.use(require('./middlewares/validator'));
 app.use(createRoutes);
 app.use('*', (req, res, next) => {
   next(new error(`Can't find ${req.originalUrl} on this server!`, 404));

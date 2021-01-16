@@ -33,13 +33,12 @@ module.exports = {
       tableName: req.routerData.basePath,
       fields: req.body,
     };
-    data.fields._createdBy = req.jwt.id;
-    data.fields._modifiedBy = req.jwt.id;
+    data.fields._modifiedBy = req.user.id;
 
     await baseService.update(data);
     res.status(200).json({
       status: 'success',
-      message: 'Successfully updated!',
+      message: 'Updated successfully!',
     });
   },
   postItem: async (req, res, next) => {
@@ -47,13 +46,13 @@ module.exports = {
       tableName: req.routerData.basePath,
       fields: req.body,
     };
-    data.fields._createdBy = req.jwt.id;
-    data.fields._modifiedBy = req.jwt.id;
+    data.fields._createdBy = req.user.id;
+    data.fields._modifiedBy = req.user.id;
     let mdlRes = await baseService.insert(data);
-    res.status(200).json({
+    res.status(201).json({
       status: 'success',
       id: mdlRes[0],
-      message: 'Inserted successfully!',
+      message: 'Created successfully!',
     });
   },
   deleteItem: async (req, res, next) => {

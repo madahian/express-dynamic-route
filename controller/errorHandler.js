@@ -60,6 +60,14 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
+  if (err.status === 'validationError') {
+    return res.status(422).json({
+      status: 'error',
+      errors: err.errors,
+      message: 'An error has been occurred during validating the data request.',
+    });
+  }
+
   if (process.env.NODE_ENV === 'development') {
     // Send error for development
     sendErrorDev(err, res);

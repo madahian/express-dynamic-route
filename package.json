@@ -15,11 +15,11 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.21.14",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "validatorjs": "^3.22.1"
   },
   "description": "Dynamic route structure for Express.js using knex.js as the query builder.",
   "main": "app.js",
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/madahian/express-dynamic-knex.git"

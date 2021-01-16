@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const AppError = require('../util/errorCreator');
+const error = require('../util/errorCreator');
 const baseService = require('../service/baseService');
 
 module.exports = async (req, res, next) => {
@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
 
   if (!token)
     return next(
-      new AppError(
+      new error(
         'You have not access to this!, please log in or sign up...',
         401
       )

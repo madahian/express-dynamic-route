@@ -1,6 +1,7 @@
 const knex = require('knex')(require('../config/config').knex_config);
 const error = require('../util/errorCreator');
 const fs = require('fs');
+const queryFunctions = require('../util/queryFunctions');
 
 const model = {
   async first(data) {
@@ -8,8 +9,15 @@ const model = {
     data.orderBy = 'id';
     let spcFnc = await model.callHelperIfExist(data);
     if (spcFnc === false) {
+      let selection = '*';
+      if (
+        data.selection &&
+        Array.isArray(data.selection) &&
+        data.selection.every((el) => typeof el === 'string')
+      )
+        selection = data.selection;
       const doc = (
-        await knex.select('*').from(data.tableName).where(data.fields)
+        await knex.select(selection).from(data.tableName).where(data.fields)
       )[0];
       if (!doc) return next(new error('Not found!', 404));
       return doc;
@@ -19,37 +27,30 @@ const model = {
   },
   async find(req, data) {
     data.functionName = 'find';
-    let selection = '*';
-    if (
-      data.selection &&
-      Array.isArray(data.selection) &&
-      data.selection.every((el) => typeof el === 'string')
-    )
-      selection = data.selection;
     let spcFnc = await model.callHelperIfExist(data, req);
     if (spcFnc === false) {
+      let selection = '*';
+      if (
+        data.selection &&
+        Array.isArray(data.selection) &&
+        data.selection.every((el) => typeof el === 'string')
+      )
+        selection = data.selection;
       let resObj = {};
       const getModel = () =>
         knex
           .table(data.tableName)
           .andWhere(function () {
-            if (req.query.filter && data.filter) {
-              for (const item of data.filter) {
-                this.orWhere(`${item}`, 'like', `%${req.query.filter}%`);
-              }
-            }
+            queryFunctions.filter(req, this, data);
           })
           .andWhere(function () {
-            if (data.fields) {
-              this.andWhere(data.fields);
-            }
+            queryFunctions.conditions(req, this, data);
           })
           .andWhere(function () {
-            if (req.query.from && req.query.to && data.filterByDate) {
-              this.andWhereRaw(
-                `${data.filterByDate} BETWEEN '${req.query.from}' AND '${req.query.to}'`
-              );
-            }
+            queryFunctions.advSearch(req, this);
+          })
+          .andWhere(function () {
+            queryFunctions.filterByDate(req, this, data);
           });
       resObj.results = (await getModel().clone().count())[0]['count(*)'];
       if (data.paginate === undefined || data.paginate === true) {
@@ -108,6 +109,7 @@ const model = {
     data.functionName = 'findWithJoin';
     let spcFnc = await model.callHelperIfExist(data, req);
     if (spcFnc === false) {
+      let resObj = {};
       let selection = '*';
       if (
         data.selection &&
@@ -115,29 +117,21 @@ const model = {
         data.selection.every((el) => typeof el === 'string')
       )
         selection = data.selection;
-      let resObj = {};
       const getModel = () =>
         knex
           .table(data.tableName)
           .join(data.secTableName, data.firstProp, '=', data.secProp)
           .andWhere(function () {
-            if (req.query.filter && data.filter) {
-              for (const item of data.filter) {
-                this.orWhere(`${item}`, 'like', `%${req.query.filter}%`);
-              }
-            }
+            queryFunctions.filter(req, this, data);
           })
           .andWhere(function () {
-            if (data.fields) {
-              this.andWhere(data.fields);
-            }
+            queryFunctions.conditions(req, this, data);
           })
           .andWhere(function () {
-            if (req.query.from && req.query.to && data.filterByDate) {
-              this.andWhereRaw(
-                `${data.filterByDate} BETWEEN '${req.query.from}' AND '${req.query.to}'`
-              );
-            }
+            queryFunctions.advSearch(req, this);
+          })
+          .andWhere(function () {
+            queryFunctions.filterByDate(req, this, data);
           });
       resObj.results = (await getModel().clone().count())[0]['count(*)'];
       if (data.paginate === undefined || data.paginate === true) {
